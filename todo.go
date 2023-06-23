@@ -1,20 +1,25 @@
 package main
 
 import (
-	"fmt"
 	tea "github.com/charmbracelet/bubbletea"
+	"todo/models"
+	"todo/state"
+	"todo/ui"
 )
 
 type model struct {
-	choices  []string
-	cursor   int
-	selected map[int]struct{}
+	todos  []models.Todo
+	cursor int
 }
 
 func initialModel() model {
 	return model{
-		choices:  []string{"eat soul", "jojo pose now", "go down the rabbit hole"},
-		selected: make(map[int]struct{}),
+		todos: []models.Todo{
+			{Text: "jojo pose", Done: false},
+			{Text: "do magic", Done: false},
+			{Text: "buy winrar license", Done: false},
+			{Text: "praise the sun", Done: false},
+		},
 	}
 }
 
@@ -32,22 +37,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "up":
-			if m.cursor > 0 {
-				m.cursor--
-			}
+			m.cursor = state.UpdateCursor(m.cursor, len(m.todos), "up")
 
 		case "down":
-			if m.cursor < len(m.choices)-1 {
-				m.cursor++
-			}
+			m.cursor = state.UpdateCursor(m.cursor, len(m.todos), "down")
 
 		case "enter", " ":
-			_, ok := m.selected[m.cursor]
-			if ok {
-				delete(m.selected, m.cursor)
-			} else {
-				m.selected[m.cursor] = struct{}{}
-			}
+			m.todos = state.ToogleTodo(m.todos, m.cursor)
 		}
 	}
 
@@ -57,19 +53,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m model) View() string {
 	s := ""
 
-	for i, choice := range m.choices {
-
-		cursor := " " // no cursor
-		if m.cursor == i {
-			cursor = ">"
-		}
-
-		checked := " "
-		if _, ok := m.selected[i]; ok {
-			checked = "x" // selected!
-		}
-
-		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
+	for i, todo := range m.todos {
+		s += ui.Todo(todo, m.cursor == i)
 	}
 
 	return s
