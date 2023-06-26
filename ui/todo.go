@@ -31,3 +31,13 @@ func Todo(todo models.Todo, focused bool) string {
 	style := computeStyle(focused, todo.Done)
 	return style.Render(todo.Text)
 }
+
+func Todos(todos []models.Todo, cursor int) []string {
+	var todoRows []string
+	for i, todo := range todos {
+		row := Todo(todo, cursor == i)
+		todoRows = append(todoRows, row)
+	}
+
+	return todoRows
+}

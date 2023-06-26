@@ -10,3 +10,7 @@ func AddNewTodo(todos *[]models.Todo, msg string) {
 	newTodo := models.Todo{Text: msg, Done: false}
 	*todos = append(*todos, newTodo)
 }
+
+func EditTodo(todo *models.Todo, newText string) {
+	(*todo).Text = newText
+}

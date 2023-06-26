@@ -6,14 +6,8 @@ import (
 	"todo/models"
 )
 
-func List(todos []models.Todo, cursor int) string {
-	var todoRows []string
-	for i, todo := range todos {
-		row := Todo(todo, cursor == i)
-		todoRows = append(todoRows, row)
-	}
-
-	return lipgloss.NewStyle().MarginLeft(2).Render(lipgloss.JoinVertical(lipgloss.Left, todoRows...))
+func List(rows []string) string {
+	return lipgloss.JoinVertical(lipgloss.Left, rows...)
 }
 
 func Pending(todos []models.Todo) string {

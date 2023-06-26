@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"todo/models"
@@ -11,6 +10,7 @@ import (
 
 type model struct {
 	cursor     int
+	editMode   bool
 	exiting    bool
 	input      textinput.Model
 	insertMode bool
@@ -44,8 +44,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.input.Reset()
 				}
 			case "esc":
-				m.cursor = len(m.todos) - 1
+				state.CursorFocusOnLast(&m.cursor, m.todos)
 				state.ExitPrompt(&m.input, &m.insertMode)
+			}
+		}
+	} else if m.editMode {
+		m.input, _ = m.input.Update(msg)
+
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case "enter":
+				if m.input.Value() != "" {
+					state.EditTodo(&m.todos[m.cursor], m.input.Value())
+					state.ExitPrompt(&m.input, &m.editMode)
+				}
+			case "esc":
+				state.ExitPrompt(&m.input, &m.editMode)
 			}
 		}
 	} else {
@@ -53,7 +68,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.String() {
 
-			case "esc", "ctrl+c", "q":
+			case "esc", "q", "ctrl+c":
 				m.exiting = true
 				return m, tea.Quit
 
@@ -69,6 +84,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "a", "i":
 				m.cursor = -1
 				m.insertMode = true
+
+			case "e":
+				m.editMode = true
+				state.SetPromptByTodo(&m.input, m.todos[m.cursor])
 			}
 		}
 	}
@@ -81,13 +100,18 @@ func (m model) View() string {
 		return ui.Pending(m.todos)
 	}
 
-	list := ui.List(m.todos, m.cursor)
+	todos := ui.Todos(m.todos, m.cursor)
+	prompt := m.input.View()
 
-	if m.insertMode {
-		return fmt.Sprintf("%s\n%s", list, m.input.View())
+	if m.editMode {
+		todos[m.cursor] = prompt
 	}
 
-	return list
+	if m.insertMode {
+		todos = append(todos, prompt)
+	}
+
+	return ui.List(todos)
 }
 
 func main() {

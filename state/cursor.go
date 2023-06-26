@@ -1,5 +1,7 @@
 package state
 
+import "todo/models"
+
 func UpdateCursor(cursor *int, limit int, direction string) {
 	if direction == "up" {
 		if *cursor == 0 {
@@ -16,4 +18,8 @@ func UpdateCursor(cursor *int, limit int, direction string) {
 			*cursor++
 		}
 	}
+}
+
+func CursorFocusOnLast(cursor *int, todos []models.Todo) {
+	*cursor = len(todos) - 1
 }

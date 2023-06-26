@@ -1,14 +1,23 @@
 package state
 
-import "github.com/charmbracelet/bubbles/textinput"
+import (
+	"github.com/charmbracelet/bubbles/textinput"
+	"todo/models"
+)
 
 func CreatePrompt() textinput.Model {
 	input := textinput.New()
 	input.Focus()
+	input.Prompt = ""
+
 	return input
 }
 
-func ExitPrompt(input *textinput.Model, insertMode *bool) {
+func SetPromptByTodo(input *textinput.Model, todo models.Todo) {
+	(*input).SetValue(todo.Text)
+}
+
+func ExitPrompt(input *textinput.Model, mode *bool) {
 	(*input).Reset()
-	*insertMode = false
+	*mode = false
 }
