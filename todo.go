@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"todo/models"
 	"todo/state"
@@ -8,16 +10,17 @@ import (
 )
 
 type model struct {
-	cursor  int
-	exiting bool
-	todos   []models.Todo
+	cursor     int
+	exiting    bool
+	input      textinput.Model
+	insertMode bool
+	todos      []models.Todo
 }
 
 func initialModel() model {
 	return model{
+		input: state.CreatePrompt(),
 		todos: []models.Todo{
-			{Text: "jojo pose", Done: false},
-			{Text: "do magic", Done: false},
 			{Text: "buy winrar license", Done: false},
 			{Text: "praise the sun", Done: false},
 		},
@@ -29,23 +32,44 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
+	if m.insertMode {
+		m.input, _ = m.input.Update(msg)
 
-	case tea.KeyMsg:
-		switch msg.String() {
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
+			case "enter":
+				if m.input.Value() != "" {
+					state.AddNewTodo(&m.todos, m.input.Value())
+					m.input.Reset()
+				}
+			case "esc":
+				m.cursor = len(m.todos) - 1
+				state.ExitPrompt(&m.input, &m.insertMode)
+			}
+		}
+	} else {
+		switch msg := msg.(type) {
+		case tea.KeyMsg:
+			switch msg.String() {
 
-		case "ctrl+c", "q":
-			m.exiting = true
-			return m, tea.Quit
+			case "esc", "ctrl+c", "q":
+				m.exiting = true
+				return m, tea.Quit
 
-		case "up":
-			m.cursor = state.UpdateCursor(m.cursor, len(m.todos), "up")
+			case "up":
+				state.UpdateCursor(&m.cursor, len(m.todos), "up")
 
-		case "down":
-			m.cursor = state.UpdateCursor(m.cursor, len(m.todos), "down")
+			case "down":
+				state.UpdateCursor(&m.cursor, len(m.todos), "down")
 
-		case "enter", " ":
-			m.todos = state.ToogleTodo(m.todos, m.cursor)
+			case "enter", " ":
+				state.ToogleTodo(&m.todos[m.cursor])
+
+			case "a", "i":
+				m.cursor = -1
+				m.insertMode = true
+			}
 		}
 	}
 
@@ -56,7 +80,14 @@ func (m model) View() string {
 	if m.exiting {
 		return ui.Pending(m.todos)
 	}
-	return ui.List(m.todos, m.cursor)
+
+	list := ui.List(m.todos, m.cursor)
+
+	if m.insertMode {
+		return fmt.Sprintf("%s\n%s", list, m.input.View())
+	}
+
+	return list
 }
 
 func main() {
