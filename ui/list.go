@@ -13,7 +13,7 @@ func List(rows []string) string {
 func Pending(todos []models.Todo) string {
 	var pendingOnly []string
 	for _, todo := range todos {
-		if !todo.Done {
+		if !todo.Done && !todo.Marked {
 			pendingOnly = append(pendingOnly, todo.Text)
 		}
 	}

@@ -8,16 +8,25 @@ import (
 var baseStyle = lipgloss.NewStyle()
 var focusedStyle = lipgloss.NewStyle().Underline(true)
 var selectedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
+var markedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("210"))
 
-func computeStyle(focused bool, done bool) lipgloss.Style {
+func computeStyle(focused bool, done bool, marked bool) lipgloss.Style {
 	lipgloss.JoinVertical(lipgloss.Left)
 
 	if focused && done {
 		return baseStyle.Copy().Inherit(focusedStyle).Inherit(selectedStyle)
 	}
 
+	if focused && marked {
+		return baseStyle.Copy().Inherit(focusedStyle).Inherit(markedStyle)
+	}
+
 	if focused {
 		return baseStyle.Copy().Inherit(focusedStyle)
+	}
+
+	if marked {
+		return baseStyle.Copy().Inherit(markedStyle)
 	}
 
 	if done {
@@ -28,7 +37,7 @@ func computeStyle(focused bool, done bool) lipgloss.Style {
 }
 
 func Todo(todo models.Todo, focused bool) string {
-	style := computeStyle(focused, todo.Done)
+	style := computeStyle(focused, todo.Done, todo.Marked)
 	return style.Render(todo.Text)
 }
 

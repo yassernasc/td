@@ -1,6 +1,7 @@
 package models
 
 type Todo struct {
-	Text string
-	Done bool
+	Text   string
+	Done   bool
+	Marked bool
 }

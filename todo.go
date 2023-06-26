@@ -72,14 +72,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.exiting = true
 				return m, tea.Quit
 
-			case "up":
-				state.UpdateCursor(&m.cursor, len(m.todos), "up")
-
-			case "down":
-				state.UpdateCursor(&m.cursor, len(m.todos), "down")
+			case "up", "down":
+				state.UpdateCursor(&m.cursor, len(m.todos), msg.String())
 
 			case "enter", " ":
-				state.ToogleTodo(&m.todos[m.cursor])
+				if !m.todos[m.cursor].Marked {
+					state.ToogleTodo(&m.todos[m.cursor])
+				}
+
+			case "d", "r":
+				if !m.todos[m.cursor].Done {
+					state.MarkTodo(&m.todos[m.cursor])
+				}
+
+			case "x":
+				state.RemoveMarkedTodos(&m.todos)
 
 			case "a", "i":
 				m.cursor = -1
