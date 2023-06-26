@@ -1,20 +1,33 @@
 package ui
 
 import (
-	"fmt"
+	"github.com/charmbracelet/lipgloss"
 	"todo/models"
 )
 
-func Todo(todo models.Todo, focused bool) string {
-	cursor := " " // no cursor
+var baseStyle = lipgloss.NewStyle()
+var focusedStyle = lipgloss.NewStyle().Underline(true)
+var selectedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
+
+func computeStyle(focused bool, done bool) lipgloss.Style {
+	lipgloss.JoinVertical(lipgloss.Left)
+
+	if focused && done {
+		return baseStyle.Copy().Inherit(focusedStyle).Inherit(selectedStyle)
+	}
+
 	if focused {
-		cursor = ">"
+		return baseStyle.Copy().Inherit(focusedStyle)
 	}
 
-	checked := " "
-	if todo.Done {
-		checked = "x" // selected!
+	if done {
+		return baseStyle.Copy().Inherit(selectedStyle)
 	}
 
-	return fmt.Sprintf("%s [%s] %s\n", cursor, checked, todo.Text)
+	return baseStyle
+}
+
+func Todo(todo models.Todo, focused bool) string {
+	style := computeStyle(focused, todo.Done)
+	return style.Render(todo.Text)
 }

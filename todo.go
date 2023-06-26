@@ -8,8 +8,9 @@ import (
 )
 
 type model struct {
-	todos  []models.Todo
-	cursor int
+	cursor  int
+	exiting bool
+	todos   []models.Todo
 }
 
 func initialModel() model {
@@ -34,6 +35,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		switch msg.String() {
 
 		case "ctrl+c", "q":
+			m.exiting = true
 			return m, tea.Quit
 
 		case "up":
@@ -51,13 +53,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) View() string {
-	s := ""
-
-	for i, todo := range m.todos {
-		s += ui.Todo(todo, m.cursor == i)
+	if m.exiting {
+		return ui.Pending(m.todos)
 	}
-
-	return s
+	return ui.List(m.todos, m.cursor)
 }
 
 func main() {
