@@ -11,8 +11,6 @@ var selectedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
 var markedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("210"))
 
 func computeStyle(focused bool, done bool, marked bool) lipgloss.Style {
-	lipgloss.JoinVertical(lipgloss.Left)
-
 	if focused && done {
 		return baseStyle.Copy().Inherit(focusedStyle).Inherit(selectedStyle)
 	}

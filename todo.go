@@ -23,6 +23,8 @@ func initialModel() model {
 		todos: []models.Todo{
 			{Text: "buy winrar license", Done: false},
 			{Text: "praise the sun", Done: false},
+			{Text: "love satan", Done: false},
+			{Text: "watch evangelion", Done: false},
 		},
 	}
 }
@@ -75,18 +77,25 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "up", "down":
 				state.UpdateCursor(&m.cursor, len(m.todos), msg.String())
 
+			case "shift+up":
+				state.ShiftUp(&m.cursor, &m.todos)
+
+			case "shift+down":
+				state.ShiftDown(&m.cursor, &m.todos)
+
 			case "enter", " ":
 				if !m.todos[m.cursor].Marked {
 					state.ToogleTodo(&m.todos[m.cursor])
 				}
 
-			case "d", "r":
+			case "d", "r", "x":
 				if !m.todos[m.cursor].Done {
 					state.MarkTodo(&m.todos[m.cursor])
 				}
 
-			case "x":
+			case "c":
 				state.RemoveMarkedTodos(&m.todos)
+				state.EnsureCursorIsVisible(&m.cursor, m.todos)
 
 			case "a", "i":
 				m.cursor = -1
