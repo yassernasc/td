@@ -8,7 +8,6 @@ import (
 func CreatePrompt() textinput.Model {
 	input := textinput.New()
 	input.Focus()
-	input.Prompt = ""
 
 	return input
 }

@@ -8,8 +8,10 @@ import (
 	"todo/models"
 )
 
-var dirPath = filepath.Join(xdg.DataHome, "todo")
-var filePath = filepath.Join(dirPath, "todos.json")
+var (
+	dirPath  = filepath.Join(xdg.DataHome, "todo")
+	filePath = filepath.Join(dirPath, "todos.json")
+)
 
 func Load() []models.Todo {
 	var todos []models.Todo

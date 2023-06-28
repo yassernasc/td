@@ -47,10 +47,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				state.AddNewTodo(&m.todos, m.input.Value())
 				m.input.Reset()
 
+				// cursor shows up when starts with no item and then one is added
+				m.cursor = -1
+
 			case "esc":
 				state.CursorFocusOnLast(&m.cursor, m.todos)
 				state.ExitPrompt(&m.input, &m.insertMode)
-				if len(m.todos) == 0 { // nothing to show, exit
+
+				// nothing to show, exit
+				if len(m.todos) == 0 {
 					return m, tea.Quit
 				}
 			}
@@ -94,7 +99,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				state.MarkTodo(&m.todos[m.cursor])
 
 			case "c":
-				state.RemoveMarkedTodos(&m.todos)
+				state.CleanTodos(&m.todos)
 				state.EnsureCursorIsVisible(&m.cursor, m.todos)
 
 			case "a", "i":

@@ -27,17 +27,6 @@ func EditTodo(todo *models.Todo, newText string) {
 	}
 }
 
-func RemoveMarkedTodos(todos *[]models.Todo) {
-	var validTodos []models.Todo
-	for _, todo := range *todos {
-		if !todo.Marked {
-			validTodos = append(validTodos, todo)
-		}
-	}
-
-	*todos = validTodos
-}
-
 func FilterPendingTodos(todos []models.Todo) []models.Todo {
 	var pendingOnly []models.Todo
 	for _, todo := range todos {
@@ -46,4 +35,8 @@ func FilterPendingTodos(todos []models.Todo) []models.Todo {
 		}
 	}
 	return pendingOnly
+}
+
+func CleanTodos(todos *[]models.Todo) {
+	*todos = FilterPendingTodos(*todos)
 }

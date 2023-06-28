@@ -5,38 +5,55 @@ import (
 	"todo/models"
 )
 
-var baseStyle = lipgloss.NewStyle()
-var focusedStyle = lipgloss.NewStyle().Underline(true)
-var selectedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("245"))
-var markedStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("210"))
+var (
+	greenColor   = lipgloss.AdaptiveColor{Light: "40", Dark: "43"}
+	redColor     = lipgloss.AdaptiveColor{Light: "203", Dark: "210"}
+	grayColor    = lipgloss.AdaptiveColor{Light: "240", Dark: "245"}
+	focusedStyle = lipgloss.NewStyle().Underline(true)
+	doneStyle    = lipgloss.NewStyle().Foreground(grayColor).Strikethrough(true)
+	markedStyle  = lipgloss.NewStyle().Foreground(redColor)
+	checkMark    = lipgloss.NewStyle().SetString("✓").Foreground(greenColor).PaddingRight(1).String()
+	xMark        = lipgloss.NewStyle().SetString("✗").Foreground(redColor).PaddingRight(1).String()
+)
 
-func computeStyle(focused bool, done bool, marked bool) lipgloss.Style {
-	if focused && done {
-		return baseStyle.Copy().Inherit(focusedStyle).Inherit(selectedStyle)
-	}
+func applyStyle(base *lipgloss.Style, flavor lipgloss.Style) {
+	*base = (*base).Inherit(flavor)
+}
 
-	if focused && marked {
-		return baseStyle.Copy().Inherit(focusedStyle).Inherit(markedStyle)
+func getStyle(todo models.Todo, focused bool) lipgloss.Style {
+	style := lipgloss.NewStyle()
+
+	if todo.Done {
+		applyStyle(&style, doneStyle)
 	}
 
 	if focused {
-		return baseStyle.Copy().Inherit(focusedStyle)
+		applyStyle(&style, focusedStyle)
 	}
 
-	if marked {
-		return baseStyle.Copy().Inherit(markedStyle)
+	if todo.Marked {
+		applyStyle(&style, markedStyle)
 	}
 
-	if done {
-		return baseStyle.Copy().Inherit(selectedStyle)
+	return style
+}
+
+func getPrefix(todo models.Todo) string {
+	if todo.Done {
+		return checkMark
 	}
 
-	return baseStyle
+	if todo.Marked {
+		return xMark
+	}
+
+	return lipgloss.NewStyle().PaddingLeft(2).String()
 }
 
 func Todo(todo models.Todo, focused bool) string {
-	style := computeStyle(focused, todo.Done, todo.Marked)
-	return style.Render(todo.Text)
+	style := getStyle(todo, focused)
+	prefix := getPrefix(todo)
+	return prefix + style.Render(todo.Text)
 }
 
 func Todos(todos []models.Todo, cursor int) []string {
