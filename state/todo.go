@@ -3,20 +3,28 @@ package state
 import "todo/models"
 
 func ToogleTodo(todo *models.Todo) {
-	(*todo).Done = !(*todo).Done
+	if !todo.Marked {
+		(*todo).Done = !(*todo).Done
+	}
 }
 
 func MarkTodo(todo *models.Todo) {
-	(*todo).Marked = !(*todo).Marked
+	if !todo.Done {
+		(*todo).Marked = !(*todo).Marked
+	}
 }
 
 func AddNewTodo(todos *[]models.Todo, msg string) {
-	newTodo := models.Todo{Text: msg, Done: false}
-	*todos = append(*todos, newTodo)
+	if msg != "" {
+		newTodo := models.Todo{Text: msg, Done: false}
+		*todos = append(*todos, newTodo)
+	}
 }
 
 func EditTodo(todo *models.Todo, newText string) {
-	(*todo).Text = newText
+	if newText != "" {
+		(*todo).Text = newText
+	}
 }
 
 func RemoveMarkedTodos(todos *[]models.Todo) {
@@ -28,4 +36,14 @@ func RemoveMarkedTodos(todos *[]models.Todo) {
 	}
 
 	*todos = validTodos
+}
+
+func FilterPendingTodos(todos []models.Todo) []models.Todo {
+	var pendingOnly []models.Todo
+	for _, todo := range todos {
+		if !todo.Done && !todo.Marked {
+			pendingOnly = append(pendingOnly, todo)
+		}
+	}
+	return pendingOnly
 }

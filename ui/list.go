@@ -11,16 +11,14 @@ func List(rows []string) string {
 }
 
 func Pending(todos []models.Todo) string {
-	var pendingOnly []string
+	var texts []string
 	for _, todo := range todos {
-		if !todo.Done && !todo.Marked {
-			pendingOnly = append(pendingOnly, todo.Text)
-		}
+		texts = append(texts, todo.Text)
 	}
 
-	if len(pendingOnly) == 0 {
-		return "all done, congrats\n"
+	if len(texts) == 0 {
+		return ""
 	}
 
-	return fmt.Sprintf("%s\n", lipgloss.JoinVertical(lipgloss.Left, pendingOnly...))
+	return fmt.Sprintf("%s\n", lipgloss.JoinVertical(lipgloss.Left, texts...))
 }

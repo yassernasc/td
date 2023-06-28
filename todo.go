@@ -18,14 +18,17 @@ type model struct {
 }
 
 func initialModel() model {
+	todos := state.Load()
+
+	var initialInsertMode bool
+	if len(todos) == 0 {
+		initialInsertMode = true
+	}
+
 	return model{
-		input: state.CreatePrompt(),
-		todos: []models.Todo{
-			{Text: "buy winrar license", Done: false},
-			{Text: "praise the sun", Done: false},
-			{Text: "love satan", Done: false},
-			{Text: "watch evangelion", Done: false},
-		},
+		input:      state.CreatePrompt(),
+		todos:      todos,
+		insertMode: initialInsertMode,
 	}
 }
 
@@ -41,13 +44,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.String() {
 			case "enter":
-				if m.input.Value() != "" {
-					state.AddNewTodo(&m.todos, m.input.Value())
-					m.input.Reset()
-				}
+				state.AddNewTodo(&m.todos, m.input.Value())
+				m.input.Reset()
+
 			case "esc":
 				state.CursorFocusOnLast(&m.cursor, m.todos)
 				state.ExitPrompt(&m.input, &m.insertMode)
+				if len(m.todos) == 0 { // nothing to show, exit
+					return m, tea.Quit
+				}
 			}
 		}
 	} else if m.editMode {
@@ -57,10 +62,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyMsg:
 			switch msg.String() {
 			case "enter":
-				if m.input.Value() != "" {
-					state.EditTodo(&m.todos[m.cursor], m.input.Value())
-					state.ExitPrompt(&m.input, &m.editMode)
-				}
+				state.EditTodo(&m.todos[m.cursor], m.input.Value())
+				state.ExitPrompt(&m.input, &m.editMode)
+
 			case "esc":
 				state.ExitPrompt(&m.input, &m.editMode)
 			}
@@ -84,14 +88,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				state.ShiftDown(&m.cursor, &m.todos)
 
 			case "enter", " ":
-				if !m.todos[m.cursor].Marked {
-					state.ToogleTodo(&m.todos[m.cursor])
-				}
+				state.ToogleTodo(&m.todos[m.cursor])
 
 			case "d", "r", "x":
-				if !m.todos[m.cursor].Done {
-					state.MarkTodo(&m.todos[m.cursor])
-				}
+				state.MarkTodo(&m.todos[m.cursor])
 
 			case "c":
 				state.RemoveMarkedTodos(&m.todos)
@@ -113,7 +113,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func (m model) View() string {
 	if m.exiting {
-		return ui.Pending(m.todos)
+		pending := state.FilterPendingTodos(m.todos)
+		state.Save(pending)
+		return ui.Pending(pending)
 	}
 
 	todos := ui.Todos(m.todos, m.cursor)
