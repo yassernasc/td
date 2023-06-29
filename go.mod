@@ -1,4 +1,4 @@
-module td
+module github.com/yassernasc/td
 
 go 1.20
 

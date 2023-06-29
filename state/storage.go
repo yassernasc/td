@@ -3,9 +3,9 @@ package state
 import (
 	"encoding/json"
 	"github.com/adrg/xdg"
+	"github.com/yassernasc/td/models"
 	"os"
 	"path/filepath"
-	"td/models"
 )
 
 var (

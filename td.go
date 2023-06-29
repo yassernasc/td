@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"td/models"
-	"td/state"
-	"td/ui"
+	"github.com/yassernasc/td/models"
+	"github.com/yassernasc/td/state"
+	"github.com/yassernasc/td/ui"
 )
 
 type model struct {

@@ -2,7 +2,7 @@ package state
 
 import (
 	"github.com/charmbracelet/bubbles/textinput"
-	"td/models"
+	"github.com/yassernasc/td/models"
 )
 
 func CreatePrompt() textinput.Model {

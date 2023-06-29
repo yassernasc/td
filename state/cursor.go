@@ -1,6 +1,6 @@
 package state
 
-import "td/models"
+import "github.com/yassernasc/td/models"
 
 func UpdateCursor(cursor *int, limit int, direction string) {
 	if direction == "up" {

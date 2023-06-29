@@ -1,10 +1,18 @@
 # td
 
+> todo app for the command-line
+
 ### philosophy
 
 - fully interactive
 - confluence of suckless and cute
 - follow the xdg base directory specification
+
+### installation
+
+```shell
+go install github.com/yassernasc/td@latest
+```
 
 ### usage
 
@@ -66,10 +74,6 @@ td
 - [ ] add tasks by stdin
 - [ ] day planning (select specific tasks from previous backlog)
 - [ ] keep history of tasks done
-- [ ] package and installation guides
-  - [ ] homebrew tap
-  - [ ] nix
-  - [ ] flatpack (or similar)
-  - ... any other
+- [ ] integrate with package managers (homebrew, nix, ...)
 
 pull requests are welcome ;)
