@@ -3,7 +3,7 @@ package ui
 import (
 	"fmt"
 	"github.com/charmbracelet/lipgloss"
-	"todo/models"
+	"td/models"
 )
 
 func List(rows []string) string {

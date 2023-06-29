@@ -1,6 +1,6 @@
 package state
 
-import "todo/models"
+import "td/models"
 
 func ToogleTodo(todo *models.Todo) {
 	if !todo.Marked {

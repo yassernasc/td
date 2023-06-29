@@ -2,7 +2,7 @@ package ui
 
 import (
 	"github.com/charmbracelet/lipgloss"
-	"todo/models"
+	"td/models"
 )
 
 var (

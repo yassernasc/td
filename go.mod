@@ -1,4 +1,4 @@
-module todo
+module td
 
 go 1.20
 

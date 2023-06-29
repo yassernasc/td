@@ -1,6 +1,6 @@
 package state
 
-import "todo/models"
+import "td/models"
 
 func UpdateCursor(cursor *int, limit int, direction string) {
 	if direction == "up" {

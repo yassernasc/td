@@ -5,11 +5,11 @@ import (
 	"github.com/adrg/xdg"
 	"os"
 	"path/filepath"
-	"todo/models"
+	"td/models"
 )
 
 var (
-	dirPath  = filepath.Join(xdg.DataHome, "todo")
+	dirPath  = filepath.Join(xdg.DataHome, "td")
 	filePath = filepath.Join(dirPath, "todos.json")
 )
 

@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
-	"todo/models"
-	"todo/state"
-	"todo/ui"
+	"td/models"
+	"td/state"
+	"td/ui"
 )
 
 type model struct {
@@ -86,21 +86,24 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			case "up", "down":
 				state.UpdateCursor(&m.cursor, len(m.todos), msg.String())
 
-			case "shift+up":
+			case "shift+up", "ctrl+k": // added ctrl keybinding 'cause vhs limitations
 				state.ShiftUp(&m.cursor, &m.todos)
 
-			case "shift+down":
+			case "shift+down", "ctrl+j":
 				state.ShiftDown(&m.cursor, &m.todos)
 
 			case "enter", " ":
 				state.ToogleTodo(&m.todos[m.cursor])
 
-			case "d", "r", "x":
+			case "backspace", "d", "r", "x":
 				state.MarkTodo(&m.todos[m.cursor])
 
 			case "c":
 				state.CleanTodos(&m.todos)
 				state.EnsureCursorIsVisible(&m.cursor, m.todos)
+				if len(m.todos) == 0 {
+					m.insertMode = true
+				}
 
 			case "a", "i":
 				m.cursor = -1
